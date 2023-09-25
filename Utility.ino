@@ -55,7 +55,7 @@ void buzzerTask(void *xTask1)
     if (ON == buzzer_status)
       buzzer_on();
     else
-      delay(500);
+      delay(100);
   }
 }
 //  LED任务线程实体
@@ -70,6 +70,6 @@ void ledTask(void *xTask1)
     else if (ON == green_led_status)
       led_blink(GREEN_LED);
     else
-      delay(500);
+      delay(100);
   }
 }

@@ -53,7 +53,7 @@ void display_main_page()
   } while (u8g2.nextPage());
 }
 // 预测界面
-void display_predictions_page(float percent_snoring, float percent_nonsnoring)
+void display_predictions_page(double percent_snoring, double percent_nonsnoring)
 {
   u8g2.clearBuffer();
   u8g2.firstPage();

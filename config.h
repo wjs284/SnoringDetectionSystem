@@ -7,14 +7,24 @@
 #include "esp32-hal-cpu.h" //设置CPU主频
 #include "soc/rtc_wdt.h"   //设置看门狗用
 
-#define SUCCEED 1
-#define FAILED 0
+#define TRUE 1
+#define FALSE 0
 #define ON 1
 #define OFF 0
+
+struct Snoring_status
+{
+    char sleep_status;
+    char breath_pause_flag;
+    unsigned long snoring_pause_time_start;
+    unsigned long snoring_pause_time_end;
+};
+Snoring_status snoring_status = {FALSE, FALSE, 0, 0};
+
 /*
  * Utility -----------------------------------------------------------------------------------------------------------------------------------
  */
-#include "soc/rtc_wdt.h"     //设置看门狗用
+#include "soc/rtc_wdt.h" //设置看门狗用
 
 #define PIN_BUZZER (4) // 蜂鸣器引脚 GPIO4
 #define PIN_RED_LED (27)
@@ -32,7 +42,7 @@ int resolution = 8; // 计数位数，2的8次幂=256
 int buzzer_status = OFF;
 int red_led_status = OFF;
 int yellow_led_status = OFF;
-int green_led_status = OFF;
+int green_led_status = ON;
 
 enum
 {
@@ -56,29 +66,30 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /*reset=*/U8X8_PIN_NONE, /*clo
  * Edge Impulse -----------------------------------------------------------------------------------------------------------------------------------
  */
 // If your target is limited in memory remove this macro to save 10K RAM
-// #define EIDSP_QUANTIZE_FILTERBANK   0
-//
-// #include <zh-project-1_inferencing.h>
-//
-// #include "freertos/FreeRTOS.h"
-// #include "freertos/task.h"
-//
-// #include "driver/i2s.h"
-//
-///** Audio buffers, pointers and selectors */
-// typedef struct {
-//     signed short *buffers[2];
-//     unsigned char buf_select;
-//     unsigned char buf_ready;
-//     unsigned int buf_count;
-//     unsigned int n_samples;
-// } inference_t;
-//
-// inference_t inference;
-// const uint32_t sample_buffer_size = 2048;
-// signed short sampleBuffer[sample_buffer_size];
-// bool debug_nn = false; // Set this to true to see e.g. features generated from the raw signal
-// int print_results = -(EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW);
-// bool record_status = true;
+#define EIDSP_QUANTIZE_FILTERBANK 0
+
+#include <zh-project-1_inferencing.h>
+
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+#include "driver/i2s.h"
+
+/** Audio buffers, pointers and selectors */
+typedef struct
+{
+    signed short *buffers[2];
+    unsigned char buf_select;
+    unsigned char buf_ready;
+    unsigned int buf_count;
+    unsigned int n_samples;
+} inference_t;
+
+inference_t inference;
+const uint32_t sample_buffer_size = 2048;
+signed short sampleBuffer[sample_buffer_size];
+bool debug_nn = false; // Set this to true to see e.g. features generated from the raw signal
+int print_results = -(EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW);
+bool record_status = true;
 
 #endif CONFIG_H
